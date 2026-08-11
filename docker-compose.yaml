@@ -8,14 +8,13 @@ services:
       # Local path where your home assistant config will be stored
       - ./config/home-assistant:/config
       - /etc/localtime:/etc/localtime:ro
+      - /run/dbus:/run/dbus:ro  # Added D-Bus for Bluetooth access
     restart: unless-stopped
     network_mode: host
     privileged: true
     depends_on:
-      - mariadb # MariaDB is optional (only if you would like to use a different database for HA).
-      # - zigbee2mqtt  # zigbee2mqtt is optional (only if you want to add Zigbee devices and have a zigbee sniffer attached).
-      - eclipse-mosquitto # aka mosquitto-mqtt is optional (only if you want to add Zigbee devices and have a zigbee sniffer attached).
-
+      - mariadb 
+      - eclipse-mosquitto 
 
   # MariaDb
   mariadb:
@@ -27,11 +26,10 @@ services:
       MYSQL_DATABASE: ha_db
       MYSQL_USER: homeassistant
       MYSQL_PASSWORD: "${HA_MYSQL_PASSWORD}"
-    user: "${LOCAL_USER}:${LOCAL_USER}"
+    # Removed the user: line so MariaDB can initialize properly
     volumes:
       # Local path where the database will be stored.
       - ./store/mariadb:/var/lib/mysql
-
 
   # eclipse-mosquitto (MQTT broker)
   eclipse-mosquitto:
@@ -41,7 +39,6 @@ services:
     network_mode: host
     volumes:
       - ./config/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
-
 
  #  # zigbee2mqtt
  #  zigbee2mqtt:
@@ -59,16 +56,16 @@ services:
  #    privileged: true
 
 
- # # Visual Studio code
- #  vscode:
- #   container_name: vscode
- #   image: codercom/code-server:latest
- #   restart: unless-stopped
- #   environment:
- #     PASSWORD: "${VSCODE_PASSWORD}"
- #   volumes:
- #     - .:/home/coder/project
- #     - ./store/coder:/home/coder/.local/share/code-server
- #   ports:
- #     - "8443:8443"
- #   command: code-server --auth password --port 8443 --disable-telemetry /home/coder/project
+ # Visual Studio code
+  vscode:
+   container_name: vscode
+   image: codercom/code-server:latest
+   restart: unless-stopped
+   environment:
+     PASSWORD: "${VSCODE_PASSWORD}"
+   volumes:
+     - .:/home/coder/project
+     - ./store/coder:/home/coder/.local/share/code-server
+   ports:
+     - "8443:8443"
+   command: code-server --auth password --port 8443 --disable-telemetry /home/coder/project
