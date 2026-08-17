@@ -4,19 +4,19 @@ services:
     container_name: home-assistant
     image: homeassistant/home-assistant:latest
     volumes:
-      # Local path where your home assistant config will be stored
       - ./config/home-assistant:/config
       - /etc/localtime:/etc/localtime:ro
-      - /run/dbus:/run/dbus:ro  # Added D-Bus for Bluetooth access
+      - /run/dbus:/run/dbus:ro
     environment:
-      # Add this line to explicitly point Bleak to the D-Bus socket
       - DBUS_SYSTEM_BUS_ADDRESS=unix:path=/run/dbus/system_bus_socket
+    devices:
+      - /dev/serial/by-id/usb-ITEAD_SONOFF_Zigbee_3.0_USB_Dongle_Plus_V2_20240105102558-if00:/dev/ttyACM0
     restart: unless-stopped
     network_mode: host
     privileged: true
     depends_on:
       - mariadb 
-      - eclipse-mosquitto 
+      - eclipse-mosquitto
 
   # MariaDb
   mariadb:
