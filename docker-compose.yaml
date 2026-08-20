@@ -45,7 +45,7 @@ services:
   whisper:
     container_name: whisper
     image: rhasspy/wyoming-whisper
-    command: ["--model", "base", "--language", "pl"]
+    command: ["--model", "tiny-int8", "--language", "pl", "--beam-size", "1"]
     volumes:
       - ./whisper-data:/data
     environment:
