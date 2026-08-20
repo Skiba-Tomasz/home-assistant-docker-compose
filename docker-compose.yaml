@@ -42,6 +42,18 @@ services:
     volumes:
       - ./config/mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf
 
+  whisper:
+    container_name: whisper
+    image: rhasspy/wyoming-whisper
+    command: ["--model", "base", "--language", "pl"]
+    volumes:
+      - ./whisper-data:/data
+    environment:
+      - TZ=Europe/Warsaw
+    restart: unless-stopped
+    ports:
+      - "10300:10300"
+
  #  # zigbee2mqtt
  #  zigbee2mqtt:
  #    container_name: zigbee2mqtt
